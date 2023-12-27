@@ -14,7 +14,6 @@ class FSCreateTest {
     private fun create(entryToCreate: FSEntry) = FSCreator().create(entryToCreate, testDirectory)
 
     @BeforeEach
-    @OptIn(ExperimentalPathApi::class)
     fun setUpTestDir() {
         val testPath = Path(testDirectory)
         if (testPath.exists()) {

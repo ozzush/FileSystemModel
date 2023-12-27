@@ -4,6 +4,7 @@ import java.io.FileWriter
 import java.lang.Exception
 import java.nio.file.Paths
 import java.nio.file.FileAlreadyExistsException
+import java.nio.file.InvalidPathException
 import java.util.logging.Logger
 import kotlin.io.path.*
 
@@ -18,15 +19,15 @@ abstract class FSEntry(val name: String) {
                 throw EmptyEntryNameException()
             }
             if (Path(name).name != name) {
-                throw IllegalEntryNameException(name);
+                throw EntryNameIsAPathException(name);
             }
         }
     }
-
-    class EmptyEntryNameException : Exception("FSEntry name is empty")
-    class IllegalEntryNameException(val name: String) :
-        Exception("Illegal FSEntry name: $name")
 }
+
+class EmptyEntryNameException : InvalidPathException("", "FSEntry name is empty")
+class EntryNameIsAPathException(name: String) :
+    InvalidPathException(name, "FSEntry name must not be a path: $name")
 
 class FSFile(name: String, val content: String) : FSEntry(name)
 
@@ -39,13 +40,14 @@ class FSFolder(name: String, val children: List<FSEntry>) : FSEntry(name) {
         private fun validateChildren(children: List<FSEntry>) {
             val childrenNameSet = children.map { child -> Path(child.name) }.toSet()
             if (childrenNameSet.size < children.size) {
-                throw ChildrenNameCollisionException()
+                throw NameCollisionInFolderException()
             }
         }
     }
 
-    class ChildrenNameCollisionException : Exception("Name collision in FSFolder")
 }
+
+class NameCollisionInFolderException : IllegalArgumentException("Name collision in FSFolder")
 
 fun folder(name: String, init: MutableList<FSEntry>.() -> Unit): FSFolder {
     val list = mutableListOf<FSEntry>()
