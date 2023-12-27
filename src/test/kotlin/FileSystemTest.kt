@@ -10,7 +10,7 @@ class FileSystemTest {
     @EnabledOnOs(OS.LINUX)
     fun `validate name test (Linux)`() {
         assertThrows<InvalidPathException> { FSFile("ab\u0000cd", "") }
-        assertThrows<InvalidPathException> { FSFile("ab/cd", "") }
+        assertThrows<EntryNameIsAPathException> { FSFile("ab/cd", "") }
     }
 
     /**
