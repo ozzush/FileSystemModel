@@ -5,6 +5,7 @@ import java.lang.Exception
 import java.nio.file.Paths
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.InvalidPathException
+import java.util.*
 import java.util.logging.Logger
 import kotlin.io.path.*
 
@@ -31,7 +32,9 @@ class EntryNameIsAPathException(name: String) :
 
 class FSFile(name: String, val content: String) : FSEntry(name)
 
-class FSFolder(name: String, val children: List<FSEntry>) : FSEntry(name) {
+class FSFolder(name: String, children: List<FSEntry>) : FSEntry(name) {
+    val children: List<FSEntry> = Collections.unmodifiableList(children.map { it })
+
     init {
         validateChildren(children)
     }
